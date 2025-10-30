@@ -297,14 +297,7 @@
         <h1>📄 أداة تصدير HTML</h1>
         <p class="subtitle">أدخل كود HTML وصدّره كملف بكل سهولة</p>
         
-        <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            <strong>💡 نصيحة:</strong> لإضافة هذا التطبيق للشاشة الرئيسية:
-            <ol style="margin: 10px 0 0 20px; padding: 0;">
-                <li>اضغط "تنزيل التطبيق" في الأسفل</li>
-                <li>افتح الملف في Chrome على جوالك</li>
-                <li>القائمة ⋮ ← إضافة إلى الشاشة الرئيسية</li>
-            </ol>
-        </div>
+
         
         <div class="input-group">
             <label for="htmlCode">أدخل كود HTML هنا:</label>
@@ -338,12 +331,6 @@
             <button class="clear-btn" onclick="clearCode()">
                 <span>🗑️</span>
                 <span>مسح</span>
-            </button>
-        </div>
-
-        <div style="margin-top: 20px;">
-            <button onclick="downloadApp()" style="width: 100%; padding: 15px; background: #f59e0b; color: white; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s;">
-                <span style="font-size: 1.3em;">📲</span> تنزيل التطبيق لإضافته للشاشة الرئيسية
             </button>
         </div>
         
@@ -445,21 +432,6 @@
                 closePreview();
             }
         });
-
-        function downloadApp() {
-            const htmlContent = document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'html-exporter-app.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showStatus('success', '✅ تم تنزيل التطبيق! الآن افتحه في Chrome واضغط القائمة ⋮ ← إضافة إلى الشاشة الرئيسية');
-        }
         
         function clearCode() {
             document.getElementById('htmlCode').value = '';
