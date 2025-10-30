@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تصدير HTML">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100' rx='20'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>📄</text></svg>">
+    <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;أداة تصدير HTML&quot;,&quot;short_name&quot;:&quot;تصدير HTML&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;start_url&quot;:&quot;/&quot;,&quot;theme_color&quot;:&quot;%23667eea&quot;,&quot;background_color&quot;:&quot;%23ffffff&quot;}">
+    <title>أداة تصدير HTML</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 25px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8em !important;
+            }
+            
+            .subtitle {
+                font-size: 0.95em !important;
+            }
+            
+            textarea {
+                min-height: 200px !important;
+                font-size: 13px !important;
+            }
+            
+            .button-group {
+                flex-direction: column !important;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .clear-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .clear-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .preview-btn {
+            background: #10b981;
+            color: white;
+        }
+        
+        .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+
+        .example {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-right: 4px solid #667eea;
+        }
+
+        .example h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example code {
+            display: block;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .preview-content {
+            position: relative;
+            width: 95%;
+            height: 95%;
+            margin: 2.5% auto;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .preview-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .preview-header h2 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+
+        .preview-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .preview-iframe {
+            flex: 1;
+            border: none;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            .preview-content {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .preview-header h2 {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 أداة تصدير HTML</h1>
+        <p class="subtitle">أدخل كود HTML وصدّره كملف بكل سهولة</p>
+        
+        <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+            <strong>💡 نصيحة:</strong> لإضافة هذا التطبيق للشاشة الرئيسية:
+            <ol style="margin: 10px 0 0 20px; padding: 0;">
+                <li>اضغط "تنزيل التطبيق" في الأسفل</li>
+                <li>افتح الملف في Chrome على جوالك</li>
+                <li>القائمة ⋮ ← إضافة إلى الشاشة الرئيسية</li>
+            </ol>
+        </div>
+        
+        <div class="input-group">
+            <label for="htmlCode">أدخل كود HTML هنا:</label>
+            <textarea id="htmlCode" placeholder="مثال:
+<!DOCTYPE html>
+<html>
+<head>
+    <title>صفحتي</title>
+</head>
+<body>
+    <h1>مرحباً بك!</h1>
+</body>
+</html>"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="fileName">اسم الملف (اختياري):</label>
+            <input type="text" id="fileName" placeholder="مثال: my-page" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: border-color 0.3s;">
+            <small style="display: block; margin-top: 8px; color: #666;">سيتم إضافة .html تلقائياً</small>
+        </div>
+        
+        <div class="button-group">
+            <button class="export-btn" onclick="exportHTML()">
+                <span>📥</span>
+                <span>تصدير كملف HTML</span>
+            </button>
+            <button class="preview-btn" onclick="previewHTML()">
+                <span>👁️</span>
+                <span>معاينة</span>
+            </button>
+            <button class="clear-btn" onclick="clearCode()">
+                <span>🗑️</span>
+                <span>مسح</span>
+            </button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="downloadApp()" style="width: 100%; padding: 15px; background: #f59e0b; color: white; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s;">
+                <span style="font-size: 1.3em;">📲</span> تنزيل التطبيق لإضافته للشاشة الرئيسية
+            </button>
+        </div>
+        
+        <div id="status" class="status"></div>
+
+        <div class="example">
+            <h3>💡 مثال بسيط:</h3>
+            <code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;صفحتي&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;مرحباً بالعالم!&lt;/h1&gt;
+    &lt;p&gt;هذه أول صفحة لي.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code>
+        </div>
+    </div>
+
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h2>👁️ معاينة الصفحة</h2>
+                <button class="preview-close" onclick="closePreview()">✕</button>
+            </div>
+            <iframe id="previewFrame" class="preview-iframe"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function exportHTML() {
+            const code = document.getElementById('htmlCode').value.trim();
+            const status = document.getElementById('status');
+            const fileNameInput = document.getElementById('fileName').value.trim();
+            
+            if (!code) {
+                showStatus('error', '⚠️ الرجاء إدخال كود HTML أولاً!');
+                return;
+            }
+            
+            try {
+                const blob = new Blob([code], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                let fileName = fileNameInput || 'page_' + Date.now();
+                if (!fileName.endsWith('.html')) {
+                    fileName += '.html';
+                }
+                
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('success', '✅ تم تصدير الملف بنجاح: ' + fileName);
+            } catch (e) {
+                showStatus('error', '❌ حدث خطأ أثناء التصدير: ' + e.message);
+            }
+        }
+        
+        function previewHTML() {
+            const code = document.getElementById('htmlCode').value.trim();
+            const status = document.getElementById('status');
+            
+            if (!code) {
+                showStatus('error', '⚠️ الرجاء إدخال كود HTML أولاً!');
+                return;
+            }
+            
+            const modal = document.getElementById('previewModal');
+            const iframe = document.getElementById('previewFrame');
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            iframe.srcdoc = code;
+            
+            showStatus('success', '✅ تم فتح المعاينة!');
+        }
+
+        function closePreview() {
+            const modal = document.getElementById('previewModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePreview();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePreview();
+            }
+        });
+
+        function downloadApp() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'html-exporter-app.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showStatus('success', '✅ تم تنزيل التطبيق! الآن افتحه في Chrome واضغط القائمة ⋮ ← إضافة إلى الشاشة الرئيسية');
+        }
+        
+        function clearCode() {
+            document.getElementById('htmlCode').value = '';
+            document.getElementById('fileName').value = '';
+            document.getElementById('status').style.display = 'none';
+        }
+        
+        function showStatus(type, message) {
+            const status = document.getElementById('status');
+            status.className = 'status ' + type;
+            status.textContent = message;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
